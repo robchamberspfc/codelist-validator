@@ -5,7 +5,6 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>Codelist validator</title>
     <!-- <script src='https://d3js.org/d3.v4.min.js'></script> -->
     <script data-require='d3@3.5.3' data-semver='3.5.3' src='//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js'></script>
@@ -34,16 +33,16 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <h1 class="display-1">Code list validator</h1>
-                    <p class="lead">Check the values in a column match a controlled list</p>
+                    <h1 class="display-1 mb-3">Code list validator</h1>
+                    <p class="lead mb-3">Check the values in a column match a controlled list</p>
                     <p>
-                        Upload data file: <input class="input-group mb-3" type='file' id='upload'
-                            onchange='loadFile()' />
+                        <strong>Upload data file: <input class="input-group mb-3" type='file' id='upload'
+                            onchange='loadFile()' /></strong>
                     </p>
                 </div>
             </div>
             <p>
-                <select class="form-select form-select-lg mb-3" id='headers' onchange='columnSelected()' hidden>
+                <select class="form-select form-select-lg mt-3 mb-3" id='headers' onchange='columnSelected()' hidden>
                     <option>--- Select column to validate ---</option>
                 </select>
             </p>
@@ -51,31 +50,31 @@
                 <hr>
                 <div class="col">
                     <div id='validationControlledList' hidden>
-                        <h2 class="display-6">Select preset values list</h2>
+                        <h2 class="display-6 mt-3 ">Select preset values list</h2>
                         <select class="form-select form-select-lg mb-2" id='validationSelect' hidden>
                             <option>--- Select values list ---</option>
                         </select>
-                        <p><button type="button" class="btn btn-primary"
-                                onclick='controlledListSelected()'>Submit</button></p>
+                        <p class="text-center"><button type="button" class="btn btn-primary"
+                                onclick='controlledListSelected()'>Check values match</button></p>
                     </div>
                 </div>
                 <div class="col">
                     <div id='validationTextInput' hidden>
-                        <h2 class="display-6">Add custom values list</h2>
-                        <textarea class="form-control mb-2" placeholder="Paste valid options here, one per line" id='validationInput'
+                        <h2 class="display-6 mt-3 ">Add custom values list</h2>
+                        <textarea class="form-control mb-2" placeholder="Enter valid options here (one per line)" id='validationInput'
                             cols='60' rows='4'></textarea>
-                        <p><button type="button" class="btn btn-primary" onclick='parseInput()'>Submit</button></p>
+                        <p class="text-center"><button type="button" class="btn btn-primary" onclick='parseInput()'>Check values match</button></p>
                     </div>
                 </div>
 
             </div>
             <div id='results' class="pb-5" hidden>
                 <hr>
-                <h2 class="display-4">Results</h2>
+                <h2 class="display-4 mt-3">Results</h2>
                 <table class="table">
                     <tr>
                         <th scope="col">Row number</th>
-                        <th scope="col">Missing value</th>
+                        <th scope="col">Value missing from list</th>
                     </tr>
                     <tbody id="table"></tbody>
                 </table>
