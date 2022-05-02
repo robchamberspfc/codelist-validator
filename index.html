@@ -11,164 +11,86 @@
     <script data-require='d3@3.5.3' data-semver='3.5.3' src='//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/main.js">
+</script>
 </head>
 
 <body>
-    <div class="container">
-        <header
-            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-            <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
-                <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
-                    <use xlink:href="#bootstrap"></use>
-                </svg>
-            </a>
+    <main>
+        <div class="container">
+            <header
+                class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+                <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+                    <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+                        <use xlink:href="#bootstrap"></use>
+                    </svg>
+                </a>
 
-            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="#" class="nav-link px-2 link-secondary">Code list validator</a></li>
-        </header>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="display-1">Code list validator</h1>
-                <p>Check the values in a column match a controlled list</p>
-                <p>
-                    Upload data file: <input type='file' id='upload' onchange='loadFile()' />
-                </p>
+                <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="#" class="nav-link px-2 link-secondary">Code list validator</a></li>
+            </header>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1 class="display-1">Code list validator</h1>
+                    <p class="lead">Check the values in a column match a controlled list</p>
+                    <p>
+                        Upload data file: <input class="input-group mb-3" type='file' id='upload'
+                            onchange='loadFile()' />
+                    </p>
+                </div>
             </div>
+            <p>
+                <select class="form-select form-select-lg mb-3" id='headers' onchange='columnSelected()' hidden>
+                    <option>--- Select column to validate ---</option>
+                </select>
+            </p>
+            <div class="row">
+                <hr>
+                <div class="col">
+                    <div id='validationControlledList' hidden>
+                        <h2 class="display-6">Select preset values list</h2>
+                        <select class="form-select form-select-lg mb-2" id='validationSelect' hidden>
+                            <option>--- Select values list ---</option>
+                        </select>
+                        <p><button type="button" class="btn btn-primary"
+                                onclick='controlledListSelected()'>Submit</button></p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div id='validationTextInput' hidden>
+                        <h2 class="display-6">Add custom values list</h2>
+                        <textarea class="form-control mb-2" placeholder="Paste valid options here, one per line" id='validationInput'
+                            cols='60' rows='4'></textarea>
+                        <p><button type="button" class="btn btn-primary" onclick='parseInput()'>Submit</button></p>
+                    </div>
+                </div>
+
+            </div>
+            <div id='results' class="pb-5" hidden>
+                <hr>
+                <h2 class="display-4">Results</h2>
+                <table class="table">
+                    <tr>
+                        <th scope="col">Row number</th>
+                        <th scope="col">Missing value</th>
+                    </tr>
+                    <tbody id="table"></tbody>
+                </table>
+            </div>
+            <div id="alert" class="alert alert-success align-items-center" role="alert" hidden>
+                <div>
+                  <strong>Data checked and all values in column matched</strong>
+                </div>
+              </div>
         </div>
-        <p>
-            <select class="form-select form-select-lg mb-3" id='headers' onchange='columnSelected()' hidden>
-                <option>--- Select column to validate ---</option>
-            </select>
-        </p>
-        <div class="row">
-            <hr>
-            <div class="col">
-        <div id='validationTextInput' hidden>
-            <h2>Input validation values</h2>
-            <textarea class="form-control mb-2" placeholder="Paste valid options here" id='validationInput' cols='60' rows='4'></textarea>
-            <p><button type="button" class="btn btn-primary" onclick='parseInput()'>Submit</button></p>
-        </div>
-    </div>
-        <div class="col">
-        <div id='validationControlledList' hidden>
-            <h2>Select validation values</h2>
-            <select class="form-select form-select-lg mb-2" id='validationSelect' hidden>
-                <option>--- Select column to validate ---</option>
-            </select>
-            <p><button type="button" class="btn btn-primary" onclick='controlledListSelected()'>Submit</button></p>
-        </div>
-    </div>
-</div>
-        <div id='results' hidden>
-            <h2>Results</h2>
-            <table class="table">
-                <tr>
-                    <th scope="col">Row number</th>
-                    <th scope="col">Missing value</th>
-                </tr>
-                <tbody id="table"></tbody>
-            </table>
-        </div>
-    </div>
+    </main>
 </body>
 
-<script>
-    let reader = new FileReader();
-    let validationValues = []
-    let inputData = []
-    let columnSelection = ""
-    let controlledListData = []
-
-    fetch('test-data/controlledLists.json')
-        .then((response) => {
-            return response.json();
-        })
-        .then((data) => {
-            controlledListData = data
-            let controlledLists = Object.keys(data)
-            populateSelect(controlledLists, 'validationSelect')
-
-        })
-
-    loadFile = () => {
-        let file = document.querySelector('input[type=file]').files[0];
-        reader.addEventListener('load', parseFile, false);
-        if (file) {
-            reader.readAsText(file);
-        }
-    }
-
-    parseFile = () => {
-        d3.csv.parse(reader.result, function (data, i) {
-            inputData.push(data)
-            if (i === 0) {
-                headerRow = d3.keys(data)
-                populateSelect(headerRow, 'headers')
-            }
-        });
-    }
-
-    populateSelect = (data, select) => {
-        document.getElementById(select).hidden = false;
-        let selectMenu = document.getElementById([select]);
-        for (i = 0; i < data.length; i++) {
-            selectMenu.options[selectMenu.options.length] = new Option(data[i], data[i]);
-        }
-    };
-
-    columnSelected = () => {
-        document.getElementById('validationTextInput').hidden = false;
-        document.getElementById('validationControlledList').hidden = false;
-        columnSelection = document.getElementById('headers').value
-
-    }
-
-    parseInput = () => {
-        let validationInput = document.getElementById('validationInput').value
-        validationValues = validationInput.split('\n');
-        checkValues(validationValues)
-    }
-
-    controlledListSelected = () => {
-        let validationSelected = document.getElementById('validationSelect').value
-        validationValues = controlledListData[validationSelected]
-        checkValues(validationValues)
-    }
-
-    checkValues = validationValues => {
-        let dontMatch = []
-        for (i = 0; i < inputData.length; i++) {
-            index = validationValues.findIndex(value => value === inputData[i][columnSelection]);
-            if (index === -1) {
-                dontMatch.push({
-                    Row: i,
-                    Value: inputData[i][columnSelection]
-                })
-            }
-
-        }
-        populateTable(dontMatch)
-    }
-
-    populateTable = data => {
-        document.getElementById('table').innerHTML=""
-        document.getElementById('results').hidden = false;
-        const tableRef = document.getElementById("table");
-        const tr = tableRef.getElementsByTagName("tr");
-        for (i = 0; i < data.length; i++) {
-            let newRow = tableRef.insertRow(-1);
-            let Cell = newRow.insertCell(0);
-            let Text = document.createTextNode(data[i].Row);
-            Cell.appendChild(Text);
-            Cell = newRow.insertCell(1);
-            Text = document.createTextNode(data[i].Value);
-            Cell.appendChild(Text);
-        }
-
-    };
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
 </script>
 
 </html>
