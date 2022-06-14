@@ -67,8 +67,9 @@ checkValues = validationValues => {
         index = validationValues.findIndex(value => value === inputData[i][columnSelection]);
         if (index === -1) {
             k++
+            console.log(i)
             dontMatch.push({
-                Row: i,
+                Row: i+2,
                 Value: inputData[i][columnSelection]
             })
         }
